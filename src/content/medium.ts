@@ -31,7 +31,6 @@ const parseContent = (post: MediumBlog): Post => {
   // Limit to 40 chars
   // Get contents within <p>
   const pRegex = /(?<=<p>)(\w|\s|\p{P})*(?=<\/p>)/gu;
-  const titleLen = post.title.length;
   const descMatches = postContent.match(pRegex) ?? [];
 
   const desc = descMatches
