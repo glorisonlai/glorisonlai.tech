@@ -1,0 +1,28 @@
+name: Rebuild and push to S3
+run-name: Rebuild and push to S3
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: <"ap-southeast-2"> #Change to reflect your Region
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Install modules
+        run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Deploy to S3
+        run: aws s3 sync --delete ./dist/ s3://${{ secrets.BUCKET_ID }}
